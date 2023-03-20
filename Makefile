@@ -3,9 +3,9 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := simple
+PROJECT_NAME := cat_lamp_server
 
-EXTRA_COMPONENT_DIRS = $(IDF_PATH)/..
+EXTRA_COMPONENT_DIRS = $(IDF_PATH)/../src
 EXTRA_COMPONENT_DIRS += $(IDF_PATH)/examples/common_components
 
 include $(IDF_PATH)/make/project.mk
