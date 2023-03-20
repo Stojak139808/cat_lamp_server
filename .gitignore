@@ -1,0 +1,18 @@
+*.o
+*.pyc
+
+# eclipse setting
+.settings
+.cproject
+.project
+
+# vscode setting
+.vscode
+
+# project files
+sdkconfig
+sdkconfig.old
+build
+
+# venv
+esp_venv/
