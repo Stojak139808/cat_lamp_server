@@ -10,8 +10,7 @@
 .vscode
 
 # project files
-sdkconfig
-sdkconfig.old
+sdkconfig*
 build
 
 # venv
