@@ -6,15 +6,16 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_event.h"
-#include "protocol_examples_common.h"
 #include "nvs.h"
 #include "nvs_flash.h"
 #include <esp_http_server.h>
 #include "driver/pwm.h"
 
-#include "color_picker.h"
-
 #include "include/rgb.h"
+#include "include/wifi.h"
+
+/* HTTP pages */
+#include "color_picker.h"
 
 static const char *TAG="HTTP";
 
@@ -111,8 +112,7 @@ void stop_webserver(httpd_handle_t server){
 }
 
 static void disconnect_handler(void* arg, esp_event_base_t event_base, 
-                               int32_t event_id, void* event_data)
-{
+                               int32_t event_id, void* event_data){
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
         ESP_LOGI(TAG, "Stopping webserver");
@@ -122,8 +122,7 @@ static void disconnect_handler(void* arg, esp_event_base_t event_base,
 }
 
 static void connect_handler(void* arg, esp_event_base_t event_base, 
-                            int32_t event_id, void* event_data)
-{
+                            int32_t event_id, void* event_data){
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
         ESP_LOGI(TAG, "Starting webserver");
@@ -136,7 +135,7 @@ void init_server(){
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    ESP_ERROR_CHECK(example_connect());
+    ESP_ERROR_CHECK(wifi_init_sta());
 
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &connect_handler, &server));
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &disconnect_handler, &server));
