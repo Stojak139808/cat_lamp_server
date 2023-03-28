@@ -19,10 +19,12 @@ const uint32_t pin_num[3] = {
     BLUE_GPIO
 };
 
+// duties table, real_duty = duties[x]/PERIOD
 uint32_t rgb_duties[3] = {
     500, 500, 500
 };
 
+// phase table, delay = (phase[x]/360)*PERIOD
 float rgb_phases[3] = {
     0, 0, 0
 };
@@ -83,7 +85,11 @@ void init_pwm(){
 }
 
 void rgb_set_color(uint32_t RGB[3]){
-
+    rgb_duties[RED_ID]   = RGB[RED_ID];
+    rgb_duties[GREEN_ID] = RGB[GREEN_ID];
+    rgb_duties[BLUE_ID]  = RGB[BLUE_ID];
+    pwm_set_duties(rgb_duties);
+    pwm_start();
 }
 
 uint32_t hex_to_int(char *hex){

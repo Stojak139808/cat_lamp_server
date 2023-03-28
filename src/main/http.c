@@ -35,14 +35,13 @@ esp_err_t change_colors_from_uri(char* color){
     /* expecting color = "%23RRGGBB" */
     uint8_t i;
     char tmp[] = {'0','0','\0'};
+    uint32_t rgb[] = {0, 0, 0};
 
     for( i = 0; i < 3; i++ ){
         memcpy(tmp, color + 3 + i*2, 2);
-        rgb_duties[i] = hex_to_int(tmp) * (PWM_PERIOD/256u);
+        rgb[i] = hex_to_int(tmp) * (PWM_PERIOD/256u);
     }
-    pwm_set_duties(rgb_duties);
-    pwm_start();
-    ESP_LOGI(TAG, "setting pwm: %d %d %d", rgb_duties[0], rgb_duties[1], rgb_duties[2]);
+    rgb_set_color(rgb);
     return ESP_OK;
 }
 
