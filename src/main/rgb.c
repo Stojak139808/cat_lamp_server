@@ -54,33 +54,34 @@ void vRGB_shifter(void* pvParam){
 
 void rbg_mode_on(){
     ESP_LOGD(TAG, "turning on rgb mode");
-    if( xRGB_shifter == NULL ){
-        rgb_duties[RED_ID] = 1000;
-        rgb_duties[GREEN_ID] = 0;
-        rgb_duties[BLUE_ID] = 0;
-        pwm_set_duties(rgb_duties);
-        pwm_start();
-        xTaskCreate(
-            vRGB_shifter,
-            "RGB_shifter",
-            configMINIMAL_STACK_SIZE + 64,
-            (void*)1u,
-            20,
-            &xRGB_shifter
-        );
-    }
+    rgb_duties[RED_ID] = 1000;
+    rgb_duties[GREEN_ID] = 0;
+    rgb_duties[BLUE_ID] = 0;
+    pwm_set_duties(rgb_duties);
+    pwm_start();
+    vTaskResume(xRGB_shifter);
 }
 
 void rbg_mode_off(){
     ESP_LOGI(TAG, "turning off rgb mode");
-    vTaskDelete( xRGB_shifter );
+    vTaskSuspend(xRGB_shifter);
     xRGB_shifter = NULL;
 }
 
 void init_pwm(){
+    xTaskCreate(
+        vRGB_shifter,
+        "RGB_shifter",
+        configMINIMAL_STACK_SIZE + 64,
+        (void*)1u,
+        0,
+        &xRGB_shifter
+    );
     pwm_init(PWM_PERIOD, rgb_duties, 3, pin_num);
     pwm_set_phases(rgb_phases);
     pwm_start();
+    vTaskSuspend(xRGB_shifter);
+    vTaskPrioritySet(xRGB_shifter, 20);
     ESP_LOGI(TAG, "PWM: ON");
 }
 
