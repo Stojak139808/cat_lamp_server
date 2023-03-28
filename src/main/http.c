@@ -4,10 +4,7 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_log.h"
-#include "esp_netif.h"
 #include "esp_event.h"
-#include "nvs.h"
-#include "nvs_flash.h"
 #include <esp_http_server.h>
 #include "driver/pwm.h"
 
@@ -130,14 +127,8 @@ static void connect_handler(void* arg, esp_event_base_t event_base,
 }
 
 void init_server(){
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
     ESP_ERROR_CHECK(wifi_init_sta());
-
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &connect_handler, &server));
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &disconnect_handler, &server));
-
     server = start_webserver();
 }
