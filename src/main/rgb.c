@@ -12,19 +12,17 @@ TaskHandle_t xRGB_shifter = NULL;
 #define RGB_STEP 10
 static const char *TAG="RGB";
 
-// pwm pin number
+/* PWM GPIO NUMBERS */
 const uint32_t pin_num[3] = {
     RED_GPIO,
     GREEN_GPIO,
     BLUE_GPIO
 };
 
-// duties table, real_duty = duties[x]/PERIOD
 uint32_t rgb_duties[3] = {
     500, 500, 500
 };
 
-// phase table, delay = (phase[x]/360)*PERIOD
 float rgb_phases[3] = {
     0, 0, 0
 };
@@ -53,20 +51,21 @@ void vRGB_shifter(void* pvParam){
 }
 
 void rbg_mode_on(){
-    ESP_LOGI(TAG, "turning on rgb mode");
+    ESP_LOGD(TAG, "turning on rgb mode");
     if( xRGB_shifter == NULL ){
         rgb_duties[RED_ID] = 1000;
         rgb_duties[GREEN_ID] = 0;
         rgb_duties[BLUE_ID] = 0;
         pwm_set_duties(rgb_duties);
         pwm_start();
-        xTaskCreate(vRGB_shifter,
-                    "RGB_shifter",
-                    configMINIMAL_STACK_SIZE + 64,
-                    (void*)1u,
-                    20,
-                    &xRGB_shifter
-                    );
+        xTaskCreate(
+            vRGB_shifter,
+            "RGB_shifter",
+            configMINIMAL_STACK_SIZE + 64,
+            (void*)1u,
+            20,
+            &xRGB_shifter
+        );
     }
 }
 
@@ -108,7 +107,7 @@ uint32_t hex_to_int(char *hex){
         }
         mul *= 16u;
     }
-    ESP_LOGI(TAG, "GOT HEX: %d", out);
+    ESP_LOGD(TAG, "GOT HEX: %d", out);
 
     return out;
 }
