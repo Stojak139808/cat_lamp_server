@@ -5,7 +5,7 @@
 
 HTML_PATH = src/main/html
 INC_PATH = src/main/include
-HTML_TO_H = ./src/html_to_c.py
+HTML_TO_H = ./src/data_to_headers.py
 HTML_FILES := $(wildcard $(HTML_PATH)/*.html)
 HTML_HEADERS := $(patsubst $(HTML_PATH)/%.html,$(INC_PATH)/%.h,$(HTML_FILES))
 
