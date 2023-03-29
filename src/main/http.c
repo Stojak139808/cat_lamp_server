@@ -10,6 +10,7 @@
 
 #include "include/rgb.h"
 #include "include/wifi.h"
+#include "include/http.h"
 
 /* HTTP pages */
 #include "color_picker.h"
@@ -19,13 +20,6 @@ static const char *TAG="HTTP";
 static httpd_handle_t server = NULL;
 
 esp_err_t index_page_handler(httpd_req_t *req);
-
-httpd_uri_t index_page = {
-    .uri       = "/",
-    .method    = HTTP_GET,
-    .handler   = index_page_handler,
-    .user_ctx  = color_picker_h
-};
 
 esp_err_t change_colors_from_uri(char* color){
 
@@ -41,6 +35,34 @@ esp_err_t change_colors_from_uri(char* color){
     rgb_set_color(rgb);
     return ESP_OK;
 }
+
+esp_err_t default_handler(httpd_req_t *req){
+    /* 
+     * Default GET handler that just sends user context data.
+     * Useful when sending pages with just text or images.
+     */
+
+    const raw_http_get_data* context_data = (raw_http_get_data*)req;
+
+    ESP_LOGI(
+        TAG,
+        "sending \"%s\", bytes: %u",
+        context_data->type,
+        context_data->size
+    );
+
+    httpd_resp_set_type(req, context_data->type);
+    httpd_resp_send(req, context_data->data, context_data->size);
+
+    return ESP_OK;
+}
+
+httpd_uri_t index_page = {
+    .uri       = "/",
+    .method    = HTTP_GET,
+    .handler   = index_page_handler,
+    .user_ctx  = color_picker_h
+};
 
 esp_err_t index_page_handler(httpd_req_t *req){
 
