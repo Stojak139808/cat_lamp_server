@@ -56,7 +56,21 @@ esp_err_t wifi_init_sta(void){
 
     s_wifi_event_group = xEventGroupCreate();
 
+    tcpip_adapter_ip_info_t ipinfo = {
+            .ip = {
+                .addr = LWIP_MAKEU32(100,0,168,192)
+            },
+            .gw = {
+                .addr = LWIP_MAKEU32(1,0,168,192)
+            },
+            .netmask = {
+                .addr = LWIP_MAKEU32(0, 255, 255, 255)
+            }
+    };
+
     tcpip_adapter_init();
+    tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
+    tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo);
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -75,17 +89,19 @@ esp_err_t wifi_init_sta(void){
         wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
     }
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
-    ESP_ERROR_CHECK(esp_wifi_start() );
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY);
+    EventBits_t bits = xEventGroupWaitBits(
+        s_wifi_event_group,
+        WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+        pdFALSE,
+        pdFALSE,
+        portMAX_DELAY
+    );
 
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
