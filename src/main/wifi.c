@@ -18,6 +18,10 @@
 #define WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
 #define MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
 
+#define WIFI_IP        CONFIG_ESP_WIFI_STATIC_IP
+#define NET_MASK       CONFIG_ESP_WIFI_MASK
+#define NET_GATEWAY    CONFIG_ESP_WIFI_GATEWAY
+
 static EventGroupHandle_t s_wifi_event_group;
 
 #define WIFI_CONNECTED_BIT BIT0
@@ -52,38 +56,32 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
 esp_err_t wifi_init_sta(void){
 
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
-
-    s_wifi_event_group = xEventGroupCreate();
-
-    tcpip_adapter_ip_info_t ipinfo = {
-            .ip = {
-                .addr = LWIP_MAKEU32(100,0,168,192)
-            },
-            .gw = {
-                .addr = LWIP_MAKEU32(1,0,168,192)
-            },
-            .netmask = {
-                .addr = LWIP_MAKEU32(0, 255, 255, 255)
-            }
-    };
-
-    tcpip_adapter_init();
-    ESP_ERROR_CHECK(tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA));
-    ESP_ERROR_CHECK(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo));
-
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
-
+    tcpip_adapter_ip_info_t ipinfo;
+    EventBits_t bits;
     wifi_config_t wifi_config = {
         .sta = {
             .ssid = WIFI_SSID,
             .password = WIFI_PASS
         },
     };
+
+    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+
+    s_wifi_event_group = xEventGroupCreate();
+
+    ip4addr_aton(WIFI_IP, &ipinfo.ip);
+    ip4addr_aton(NET_MASK, &ipinfo.netmask);
+    ip4addr_aton(NET_GATEWAY, &ipinfo.gw);
+
+    tcpip_adapter_init();
+    ESP_ERROR_CHECK(tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA));
+    ESP_ERROR_CHECK(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo));
+
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 
     if (strlen((char *)wifi_config.sta.password)) {
         wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
@@ -95,7 +93,7 @@ esp_err_t wifi_init_sta(void){
 
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
-    EventBits_t bits = xEventGroupWaitBits(
+    bits = xEventGroupWaitBits(
         s_wifi_event_group,
         WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
         pdFALSE,

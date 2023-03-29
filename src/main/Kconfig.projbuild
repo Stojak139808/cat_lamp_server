@@ -1,5 +1,23 @@
 menu "WIFI configuration"
 
+    config ESP_WIFI_STATIC_IP
+        string "WiFi station static IPv4"
+        default "192.168.0.100"
+        help
+            IPv4 address for your station.
+
+    config ESP_WIFI_MASK
+        string "WiFi station network mask"
+        default "255.255.255.0"
+        help
+            Network mask for your network.
+
+    config ESP_WIFI_GATEWAY
+        string "WiFi station network gateway"
+        default "192.168.0.1"
+        help
+            Gateway for your network.
+
     config ESP_WIFI_SSID
         string "WiFi SSID"
         default "MY_SSID"
