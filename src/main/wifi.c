@@ -69,8 +69,8 @@ esp_err_t wifi_init_sta(void){
     };
 
     tcpip_adapter_init();
-    tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
-    tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo);
+    ESP_ERROR_CHECK(tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA));
+    ESP_ERROR_CHECK(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo));
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
