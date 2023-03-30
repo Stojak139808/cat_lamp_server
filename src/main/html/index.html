@@ -1,35 +1,42 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>
-            Cat Lamp
-        </title>
+        <title>Cat Lamp</title>
         <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
-        <h1>
-            Cat lamp
-        </h1>
-        <span>
-            Choose the colour of the lamp!
-        </span>
-        <h2>
-            Basic colours
-        </h2>
-        <ul>
-            <li>Red</li>
-            <li>Green</li>
-            <li>Blue</li>
-            <li>Pink</li>
-            <li>Purple</li>
-        </ul>
-        <h2>
-            Colour palette
-        </h2>
-        <form id="colorForm" method="GET">
-            <label for="colorpicker">Color Picker:</label>
-            <input type="color" name="colorlamp" id="colorpicker" value="#000000" onchange="send_color_value()">
-        </form>
+        <header>
+            <div>
+                <h1>Cat lamp</h1>
+                <span>Choose the colour of the lamp!</span>
+            </div>
+            <address>
+                <h3>Authors</h3>
+                <h4>Backend</h4>
+                <p>Kacper Stojek</p>
+                <h4>Frontend</h4>
+                <p>Joanna Gembel</p>
+            </address>
+        </header>
+        <main>
+            <section>
+                <h2>Basic colours</h2>
+                <ul>
+                    <li>Red</li>
+                    <li>Green</li>
+                    <li>Blue</li>
+                    <li>Pink</li>
+                    <li>Purple</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Colour palette</h2>
+                <form id="colorForm" method="GET">
+                    <label for="colorpicker">Color Picker:</label>
+                    <input type="color" name="colorlamp" id="colorpicker" value="#000000" onchange="send_color_value()">
+                </form>
+            </section>
+        </main>
         <script>
             function send_color_value(){
                 document.getElementById("colorForm").submit();
